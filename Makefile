@@ -1,5 +1,5 @@
 environment:
 	python -m venv .venv
 
-dep:
+install:
 	pip install -r requirements.txt

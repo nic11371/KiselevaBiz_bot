@@ -3,6 +3,7 @@ import aiosqlite
 
 async def initialize_database():
     async with aiosqlite.connect("bot.db") as db:
+        # Создаем таблицу users, если она не существует
         await db.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 telegram_id INTEGER PRIMARY KEY,
@@ -11,6 +12,7 @@ async def initialize_database():
                 bot_open BOOLEAN DEFAULT FALSE
             )
         """)
+        # Сохраняем изменения
         await db.commit()
 
 
@@ -29,28 +31,29 @@ async def get_all_users():
         cursor = await db.execute("SELECT * FROM users")
         rows = await cursor.fetchall()
 
-    users = [
-        {
-            "telegram_id": row[0],
-            "username": row[1],
-            "first_name": row[2],
-            "bot_open": bool(row[3])
-        }
-        for row in rows
-    ]
-    return users
+        # Преобразуем результаты в список словарей
+        users = [
+            {
+                "telegram_id": row[0],
+                "username": row[1],
+                "first_name": row[2],
+                "bot_open": bool(row[3])
+            }
+            for row in rows
+        ]
+        return users
 
 
 async def get_user_by_id(telegram_id: int):
     async with aiosqlite.connect("bot.db") as db:
-        cursor = await db.execute("""
-            SELECT * FROM users WHERE telegram_id = ?
-            """, (telegram_id,))
+        cursor = await db.execute(
+            "SELECT * FROM users WHERE telegram_id = ?", (telegram_id,))
         row = await cursor.fetchone()
 
         if row is None:
             return None
 
+        # Преобразуем результат в словарь
         user = {
             "telegram_id": row[0],
             "username": row[1],
