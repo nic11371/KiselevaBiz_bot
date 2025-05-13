@@ -18,8 +18,7 @@ def channels_kb(kb_list: list):
             inline_keyboard.append(kb)
 
     # Добавление кнопки "Проверить подписку"
-    inline_keyboard.append([InlineKeyboardButton(
-        text="Проверить подписку", callback_data="check_subscription")])
+    inline_keyboard.append([InlineKeyboardButton(text="Проверить подписку", callback_data="check_subscription")])
 
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
@@ -47,7 +46,7 @@ def main_contact_kb(user_id: int):
                 text="👥 GROUP ID",
                 request_chat=KeyboardButtonRequestChat(
                     request_id=2,
-                    chat_is_channel=False,  # Включает только обычные группы
+                    chat_is_channel=False,  # Включает только обычные группы (не каналы)
                     chat_has_username=True
                 )
             ),
@@ -73,11 +72,11 @@ def main_contact_kb(user_id: int):
             )
         ])
 
-    keyboard = ReplyKeyboardBuilder(
+    keyboard = ReplyKeyboardMarkup(
         keyboard=buttons,
         resize_keyboard=True,
         one_time_keyboard=False,
-        input_field_placeholder="По кому получим ID?"
+        input_field_placeholder="По ком получим ID?"
     )
 
     return keyboard
@@ -90,6 +89,7 @@ def admin_kb():
             [InlineKeyboardButton(text="📧 Рассылка", callback_data="admin_broadcast")]
         ]
     )
+    return keyboard
 
 
 def cancel_btn():

@@ -48,14 +48,11 @@ async def check_subs_func(call: CallbackQuery):
         telegram_id = call.from_user.id
         check = await is_user_subscribed(channel_url, telegram_id)
         if check is False:
-            await call.message.answer(
-                f"❌ вы не подписались на канал 👉 {label}",
-                reply_markup=channels_kb(kb_list))
+            await call.message.answer(f"❌ вы не подписались на канал 👉 {label}", reply_markup=channels_kb(kb_list))
             return False
+
     await update_bot_open_status(telegram_id=call.from_user.id, bot_open=True)
-    await call.message.answer(
-        "Спасибо за подписку на канал! Теперь можете воспользоваться ботом",
-        reply_markup=main_contact_kb(call.from_user.id))
+    await call.message.answer("Спасибо за подписки на все каналы! Теперь можете воспользоваться функционалом бота", reply_markup=main_contact_kb(call.from_user.id))
 
 
 @router.message(F.text == '🆔 MY INFO')
@@ -63,7 +60,7 @@ async def handle_my_id(message: Message):
     user_id = message.from_user.id
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name or "Не указано"
-    username = message.from_username or "Не указано"
+    username = message.from_user.username or "Не указано"
 
     await message.answer(
         f"🔍 Ваши данные:\n\n"
@@ -79,8 +76,7 @@ async def handle_user(message: Message):
     request_id = message.user_shared.request_id
 
     if request_id == 1:
-        await message.answer(
-            f"👤 Вы выбрали пользователя с ID: <code>{user_id}</code>")
+        await message.answer(f"👤 Вы выбрали пользователя с ID: <code>{user_id}</code>")
     elif request_id == 4:
         await message.answer(f"🤖 Вы выбрали бота с ID: <code>{user_id}</code>")
 
@@ -91,8 +87,6 @@ async def handle_chat_or_channel(message: Message):
     request_id = message.chat_shared.request_id
 
     if request_id == 2:
-        await message.answer(
-            f"👥 Вы выбрали группу с ID: <code>{chat_id}</code>")
+        await message.answer(f"👥 Вы выбрали группу с ID: <code>{chat_id}</code>")
     elif request_id == 3:
-        await message.answer(
-            f"📢 Вы выбрали канал с ID: <code>{chat_id}</code>")
+        await message.answer(f"📢 Вы выбрали канал с ID: <code>{chat_id}</code>")

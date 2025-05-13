@@ -44,15 +44,18 @@ async def admin_broadcast_handler(call: CallbackQuery, state: FSMContext):
     await state.set_state(Form.start_broadcast)
 
 
-@router.message(
-    F.content_type.in_({'text', 'photo', 'document', 'video', 'audio'}), Form.start_broadcast)
+@router.message(F.content_type.in_({'text', 'photo', 'document', 'video', 'audio'}), Form.start_broadcast)
 async def universe_broadcast(message: Message, state: FSMContext):
     users_data = await get_all_users()
+
+    # Определяем параметры для рассылки в зависимости от типа сообщения
     content_type = message.content_type
+
     if content_type == ContentType.TEXT and message.text == '❌ Отмена':
         await state.clear()
         await message.answer('Рассылка отменена!', reply_markup=admin_kb())
         return
+
     await message.answer(f'Начинаю рассылку на {len(users_data)} пользователей.')
 
     good_send, bad_send = await broadcast_message(
@@ -68,4 +71,4 @@ async def universe_broadcast(message: Message, state: FSMContext):
 
     await state.clear()
     await message.answer(f'Рассылка завершена. Сообщение получило <b>{good_send}</b>, '
-                         f'НЕ получило <b>{bad_send}</b> пользователей.', reply_markup=admin_kb())
+                        f'НЕ получило <b>{bad_send}</b> пользователей.', reply_markup=admin_kb())
