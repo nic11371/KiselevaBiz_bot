@@ -1,4 +1,5 @@
 import os
+# from decouple import config
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -15,6 +16,13 @@ HOST = os.getenv("HOST")
 PORT = int(os.getenv("PORT"))
 WEBHOOK_PATH = f'/{BOT_TOKEN}'
 BASE_URL = os.getenv("BASE_URL")
+
+# ADMIN_ID = int(config('ADMIN_ID'))
+# BOT_TOKEN = config("BOT_TOKEN")
+# HOST = config("HOST")
+# PORT = int(config("PORT"))
+# WEBHOOK_PATH = f'/{BOT_TOKEN}'
+# BASE_URL = config("BASE_URL")
 
 
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(

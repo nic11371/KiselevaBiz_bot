@@ -1,6 +1,7 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, \
-    KeyboardButton, KeyboardButtonRequestUser, KeyboardButtonRequestChat
+    KeyboardButton, KeyboardButtonRequestUser, KeyboardButtonRequestChat, \
+    ReplyKeyboardMarkup
 from create_bot import ADMIN_ID
 
 
@@ -80,3 +81,21 @@ def main_contact_kb(user_id: int):
     )
 
     return keyboard
+
+
+def admin_kb():
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="👥 Пользователи", callback_data="admin_users")],
+            [InlineKeyboardButton(text="📧 Рассылка", callback_data="admin_broadcast")]
+        ]
+    )
+
+
+def cancel_btn():
+    return ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text="❌ Отмена")]],
+        resize_keyboard=True,
+        one_time_keyboard=False,
+        input_field_placeholder="Или нажмите на 'ОТМЕНА' для отмены"
+    )
