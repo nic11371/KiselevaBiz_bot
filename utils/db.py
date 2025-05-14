@@ -1,8 +1,9 @@
 import aiosqlite
+from create_bot import DATABASE_PATH
 
 
 async def initialize_database():
-    async with aiosqlite.connect("data/bot.db") as db:
+    async with aiosqlite.connect(DATABASE_PATH) as db:
         # Создаем таблицу users, если она не существует
         await db.execute("""
             CREATE TABLE IF NOT EXISTS users (
@@ -17,7 +18,7 @@ async def initialize_database():
 
 
 async def add_user(telegram_id: int, username: str, first_name: str):
-    async with aiosqlite.connect("data/bot.db") as db:
+    async with aiosqlite.connect(DATABASE_PATH) as db:
         await db.execute("""
             INSERT INTO users (telegram_id, username, first_name)
             VALUES (?, ?, ?)
@@ -27,7 +28,7 @@ async def add_user(telegram_id: int, username: str, first_name: str):
 
 
 async def get_all_users():
-    async with aiosqlite.connect("data/bot.db") as db:
+    async with aiosqlite.connect(DATABASE_PATH) as db:
         cursor = await db.execute("SELECT * FROM users")
         rows = await cursor.fetchall()
 
@@ -45,7 +46,7 @@ async def get_all_users():
 
 
 async def get_user_by_id(telegram_id: int):
-    async with aiosqlite.connect("data/bot.db") as db:
+    async with aiosqlite.connect(DATABASE_PATH) as db:
         cursor = await db.execute(
             "SELECT * FROM users WHERE telegram_id = ?", (telegram_id,))
         row = await cursor.fetchone()
@@ -64,7 +65,7 @@ async def get_user_by_id(telegram_id: int):
 
 
 async def update_bot_open_status(telegram_id: int, bot_open: bool):
-    async with aiosqlite.connect("data/bot.db") as db:
+    async with aiosqlite.connect(DATABASE_PATH) as db:
         await db.execute("""
             UPDATE users
             SET bot_open = ?

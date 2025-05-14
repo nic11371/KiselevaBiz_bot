@@ -16,6 +16,7 @@ HOST = os.getenv("HOST")
 PORT = int(os.getenv("PORT"))
 WEBHOOK_PATH = f'/{BOT_TOKEN}'
 BASE_URL = os.getenv("BASE_URL")
+DATABASE_PATH = os.getenv("DATABASE_PATH")
 
 # ADMIN_ID = int(config('ADMIN_ID'))
 # BOT_TOKEN = config("BOT_TOKEN")
