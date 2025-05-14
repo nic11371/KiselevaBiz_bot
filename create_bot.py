@@ -10,7 +10,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 load_dotenv()
 
 
-ADMIN_ID = os.getenv('ADMIN_ID')
+ADMIN_ID = int(os.getenv('ADMIN_ID'))
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 HOST = os.getenv("HOST")
 PORT = int(os.getenv("PORT"))

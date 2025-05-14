@@ -6,7 +6,7 @@ from aiogram.webhook.aiohttp_server import SimpleRequestHandler, \
 from create_bot import bot, dp, BASE_URL, WEBHOOK_PATH, HOST, PORT, ADMIN_ID
 from utils.db import initialize_database
 from handlers.start import router as start_router
-# from handlers.admin_panel import router as admin_router
+from handlers.admin_panel import router as admin_router
 
 
 # Функция для установки командного меню для бота
@@ -45,8 +45,7 @@ async def on_shutdown() -> None:
 # Основная функция, которая запускает приложение
 def main() -> None:
     # Подключаем маршрутизатор (роутер) для обработки сообщений
-    dp.include_router(start_router)
-    # dp.include_router(admin_router)
+    dp.include_routers(start_router, admin_router)
 
     # Регистрируем функцию, которая будет вызвана при старте бота
     dp.startup.register(on_startup)
