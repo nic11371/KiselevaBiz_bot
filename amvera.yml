@@ -1,4 +1,3 @@
-version: null
 meta:
   environment: python
   toolchain:
@@ -8,5 +7,6 @@ build:
   requirementsPath: requirements.txt
 run:
   scriptName: aiogram_run.py
-  persistenceMount: /data
-  containerPort: "5000"
+  command: null
+  persistenceMount: /data/bot.db
+  containerPort: "80"
