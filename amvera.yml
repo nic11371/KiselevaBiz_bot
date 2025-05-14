@@ -9,4 +9,4 @@ run:
   scriptName: aiogram_run.py
   command: null
   persistenceMount: /data
-  containerPort: "80"
+  containerPort: "5000"
