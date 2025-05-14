@@ -8,5 +8,5 @@ build:
 run:
   scriptName: aiogram_run.py
   command: null
-  persistenceMount: /data/bot.db
+  persistenceMount: /data
   containerPort: "80"
