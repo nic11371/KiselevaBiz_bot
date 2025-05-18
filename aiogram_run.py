@@ -7,12 +7,16 @@ from create_bot import bot, dp, BASE_URL, WEBHOOK_PATH, HOST, PORT, ADMIN_ID
 from utils.db import initialize_database
 from handlers.start import router as start_router
 from handlers.admin_panel import router as admin_router
-
+from handlers.in_pm import router as rules
+from handlers.bot_in_group import router as add_in_group
 
 # Функция для установки командного меню для бота
 async def set_commands():
     # Создаем список команд, которые будут доступны пользователям
-    commands = [BotCommand(command='start', description='Старт')]
+    commands = [
+        BotCommand(command='start', description='Старт'),
+        BotCommand(command='ban', description='Бан')
+        ]
     # Устанавливаем эти команды как дефолтные для всех пользователей
     await bot.set_my_commands(commands, BotCommandScopeDefault())
 
@@ -45,7 +49,7 @@ async def on_shutdown() -> None:
 # Основная функция, которая запускает приложение
 def main() -> None:
     # Подключаем маршрутизатор (роутер) для обработки сообщений
-    dp.include_routers(start_router, admin_router)
+    dp.include_routers(start_router, admin_router, rules, add_in_group)
 
     # Регистрируем функцию, которая будет вызвана при старте бота
     dp.startup.register(on_startup)
@@ -59,7 +63,8 @@ def main() -> None:
     # Настраиваем обработчик запросов для работы с вебхуком
     webhook_requests_handler = SimpleRequestHandler(
         dispatcher=dp,  # Передаем диспетчер
-        bot=bot  # Передаем объект бота
+        bot=bot,
+        allowed_updates=["message", "inline_query", "chat_member"]# Передаем объект бота
     )
     # Регистрируем обработчик запросов на определенном пути
     webhook_requests_handler.register(app, path=WEBHOOK_PATH)

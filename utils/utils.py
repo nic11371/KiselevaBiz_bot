@@ -2,8 +2,6 @@ import asyncio
 from aiogram.enums import ContentType, ChatMemberStatus
 from create_bot import bot
 from keyboards.kb import main_contact_kb, channels_kb
-
-
 from aiogram.enums import ContentType, ChatMemberStatus
 from create_bot import bot
 

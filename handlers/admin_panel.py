@@ -2,15 +2,16 @@ from aiogram import Router, F
 from aiogram.enums import ContentType
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, ChatMemberUpdated
+from aiogram.filters.command import Command
 from create_bot import ADMIN_ID
 from utils.db import get_all_users
 from keyboards.kb import admin_kb, cancel_btn
 from utils.utils import broadcast_message
+from utils.db import get_user_by_id
 
 
 router = Router()
-
 
 class Form(StatesGroup):
     start_broadcast = State()
@@ -72,3 +73,16 @@ async def universe_broadcast(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(f'Рассылка завершена. Сообщение получило <b>{good_send}</b>, '
                         f'НЕ получило <b>{bad_send}</b> пользователей.', reply_markup=admin_kb())
+
+
+@router.message(Command("ban"), F.reply_to_message)
+async def cmd_ban(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        await message.answer(
+            "У вас недостаточно прав для совершения этого действия"
+        )
+    else:
+        await message.chat.ban(
+            user_id=message.reply_to_message.from_user.id
+        )
+        await message.answer("Нарушитель заблокирован")

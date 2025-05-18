@@ -10,7 +10,8 @@ async def initialize_database():
                 telegram_id INTEGER PRIMARY KEY,
                 username TEXT,
                 first_name TEXT,
-                bot_open BOOLEAN DEFAULT FALSE
+                bot_open BOOLEAN DEFAULT FALSE,
+                block BOOLEAN DEFAULT FALSE
             )
         """)
         # Сохраняем изменения
@@ -38,7 +39,8 @@ async def get_all_users():
                 "telegram_id": row[0],
                 "username": row[1],
                 "first_name": row[2],
-                "bot_open": bool(row[3])
+                "bot_open": bool(row[3]),
+                "block": bool(row[4])
             }
             for row in rows
         ]
@@ -59,7 +61,8 @@ async def get_user_by_id(telegram_id: int):
             "telegram_id": row[0],
             "username": row[1],
             "first_name": row[2],
-            "bot_open": bool(row[3])
+            "bot_open": bool(row[3]),
+            "block": bool(row[4])
         }
         return user
 
@@ -71,4 +74,14 @@ async def update_bot_open_status(telegram_id: int, bot_open: bool):
             SET bot_open = ?
             WHERE telegram_id = ?
         """, (bot_open, telegram_id))
+        await db.commit()
+
+
+async def update_block_status(telegram_id: int, block: bool):
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        await db.execute("""
+            UPDATE users
+            SET block = ?
+            WHERE telegram_id = ?
+        """, (block, telegram_id))
         await db.commit()
