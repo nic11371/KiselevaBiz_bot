@@ -1,4 +1,4 @@
 aiogram==3.11.0
-python-decouple==3.8
 aiosqlite==0.20.0
 load-dotenv==0.1.0
+SQLAlchemy==2.0.40
