@@ -1,0 +1,11 @@
+{
+    "python.pythonPath": "${workspaceFolder}/.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true
+}

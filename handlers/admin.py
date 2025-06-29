@@ -19,6 +19,6 @@ class Admin(Filter):
         return message.from_user.id == self.admin_id
 
 
-@admin.message(Admin(), Command('apanel'))
-async def apanel(message: Message):
-    await message.answer('Это панель администратора')
+@admin.message()
+async def get_group_id(message: Message):
+    await message.answer(f"Chat ID: `{message.chat.id}`", parse_mode="Markdown")

@@ -1,4 +1,5 @@
 import os
+import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -11,7 +12,11 @@ from aiohttp import web
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from middlewares import AntiSpamMiddleware
 from aiogram.fsm.storage.memory import MemoryStorage
-
+from handlers.webhooks import ckassa_webhook
+from functools import partial
+from database.models import async_main
+from handlers.subscription_checker import subscription_checker
+# from database.requests import simulate_expired_user
 
 load_dotenv()
 
@@ -26,7 +31,8 @@ BASE_URL = os.getenv("BASE_URL")
 
 # инициализируем бота и диспетчера для работы с ним
 bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher(storage=MemoryStorage())
+storage = MemoryStorage()
+dp = Dispatcher(storage=storage)
 # dp.update.middleware(AntiSpamMiddleware(limit=2, interval=1))
 
 
@@ -39,12 +45,19 @@ dp = Dispatcher(storage=MemoryStorage())
 
 # Функция, которая будет вызвана при запуске бота
 async def on_startup() -> None:
+    await async_main()
     # Устанавливаем командное меню
     # await set_commands()
     # Устанавливаем вебхук для приема сообщений через заданный URL
     await bot.set_webhook(f"{BASE_URL}{WEBHOOK_PATH}")
+
+    # await simulate_expired_user(tg_id=1000092717, days_ago=30)
+
     # Отправляем сообщение администратору о том, что бот был запущен
+    asyncio.create_task(subscription_checker(bot))
     await bot.send_message(chat_id=ADMIN_ID, text='Бот запущен!')
+    webhook_info = await bot.get_webhook_info()
+    print("📡 Webhook info:", webhook_info)
 
 
 # Функция, которая будет вызвана при остановке бота
@@ -78,13 +91,13 @@ def main() -> None:
     )
     # Регистрируем обработчик запросов на определенном пути
     webhook_requests_handler.register(app, path=WEBHOOK_PATH)
-
+    app.router.add_post(
+        '/webhook/ckassa', partial(ckassa_webhook, bot=bot, storage=storage))
     # Настраиваем приложение и связываем его с диспетчером и ботом
     setup_application(app, dp, bot=bot)
 
     # Запускаем веб-сервер на указанном хосте и порте
     web.run_app(app, host=HOST, port=PORT)
-    
 
 
 # Точка входа в программу
