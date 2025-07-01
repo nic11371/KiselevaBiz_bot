@@ -1,11 +1,5 @@
-import os
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from handlers.texts import TEXTS
-from dotenv import load_dotenv
-
-
-load_dotenv()
 
 
 def start_btn():

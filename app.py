@@ -1,35 +1,22 @@
-import os
 import asyncio
+import logging
+from aiohttp import web
 from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-from dotenv import load_dotenv
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, \
+    setup_application
+from aiogram.fsm.storage.memory import MemoryStorage
+from functools import partial
+from variables import BOT_TOKEN, BASE_URL, WEBHOOK_PATH, ADMIN_ID, HOST, PORT
 from handlers.user import user
 from handlers.admin import admin
-import logging
-from aiogram.types import BotCommand, BotCommandScopeDefault
-from aiohttp import web
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-from middlewares import AntiSpamMiddleware
-from aiogram.fsm.storage.memory import MemoryStorage
 from handlers.webhooks import ckassa_webhook
-from functools import partial
-from database.models import async_main
 from handlers.subscription_checker import subscription_checker
-# from database.requests import simulate_expired_user
+from database.models import async_main
+# from tests.test_expired_date import simulate_expired_user, \
+#     simulate_prev_expired_user
+# from middlewares import AntiSpamMiddleware
 
-load_dotenv()
 
-
-# переменные для работы
-ADMIN_ID = os.getenv('ADMIN_ID')
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-HOST = os.getenv("HOST")
-PORT = int(os.getenv("PORT"))
-WEBHOOK_PATH = f'/{BOT_TOKEN}'
-BASE_URL = os.getenv("BASE_URL")
-
-# инициализируем бота и диспетчера для работы с ним
 bot = Bot(token=BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
@@ -51,7 +38,7 @@ async def on_startup() -> None:
     # Устанавливаем вебхук для приема сообщений через заданный URL
     await bot.set_webhook(f"{BASE_URL}{WEBHOOK_PATH}")
 
-    # await simulate_expired_user(tg_id=1000092717, days_ago=30)
+    # await simulate_expired_user(tg_id=1000092717) #Тестовая функция
 
     # Отправляем сообщение администратору о том, что бот был запущен
     asyncio.create_task(subscription_checker(bot))
@@ -70,18 +57,10 @@ async def on_shutdown() -> None:
     await bot.session.close()
 
 
-# Основная функция, которая запускает приложение
 def main() -> None:
-    # Подключаем маршрутизатор (роутер) для обработки сообщений
     dp.include_routers(user, admin)
-
-    # Регистрируем функцию, которая будет вызвана при старте бота
     dp.startup.register(on_startup)
-
-    # Регистрируем функцию, которая будет вызвана при остановке бота
     dp.shutdown.register(on_shutdown)
-
-    # Создаем веб-приложение на базе aiohttp
     app = web.Application()
 
     # Настраиваем обработчик запросов для работы с вебхуком
@@ -100,9 +79,9 @@ def main() -> None:
     web.run_app(app, host=HOST, port=PORT)
 
 
-# Точка входа в программу
 if __name__ == "__main__":
-    # Настраиваем логирование (информация, предупреждения, ошибки) и выводим их в консоль
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger(__name__)  # Создаем логгер для использования в других частях программы
-    main()  # Запускаем основную функцию
+    logging.basicConfig(
+        level=logging.INFO, format='''
+        %(asctime)s - %(name)s - %(levelname)s - %(message)s''')
+    logger = logging.getLogger(__name__)
+    main()

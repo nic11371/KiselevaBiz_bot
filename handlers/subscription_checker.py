@@ -1,10 +1,9 @@
-from asyncio import create_task, sleep
-from database.requests import get_all_users, update_user_status
+from asyncio import sleep
+from database.requests import get_all_users, update_status
 from datetime import datetime
-from keyboards.userkb import pay_btn  # если кнопка здесь
-from handlers.texts import TEXTS  # обязательно импортируй
+from keyboards.userkb import pay_btn
+from handlers.texts import TEXTS
 from handlers.user import generate_payment_link
-from database.requests import update_last_reminder_date
 import os
 
 
@@ -35,15 +34,15 @@ async def subscription_checker(bot):
             keyboard = pay_btn(u.tg_id, pay_link, TEXTS.get("pay_btn"))
 
             if delta.days == 29 and u.status_pay:
-                if not u.last_reminder_date or (
-                        now.date() != u.last_reminder_date.date()):
+                if not u.last_pay_date or (
+                        now.date() != u.last_pay_date.date()):
                     await bot.send_message(
                         u.tg_id, TEXTS.get("subscribe"), reply_markup=keyboard)
-                    await update_last_reminder_date(u.tg_id, now)
+                    print(f"[DEBUG] Отправлено сообщение пользователю {u.tg_id}")
 
             if delta.days >= 30 and u.status_pay:
                 print(f"[DEBUG] Ставим статус False для {u.tg_id}")
-                await update_user_status(u.tg_id, False)
+                await update_status(u.tg_id, False)
                 try:
                     await bot.ban_chat_member(
                         chat_id=chat_id, user_id=u.tg_id)
@@ -54,4 +53,4 @@ async def subscription_checker(bot):
                 await bot.send_message(
                     u.tg_id, TEXTS.get("unsubscribe"), reply_markup=keyboard)
 
-        await sleep(time_delay)  # ждать 24 часа
+        await sleep(time_delay)
