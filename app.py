@@ -14,13 +14,13 @@ from handlers.subscription_checker import subscription_checker
 from database.models import async_main
 # from tests.test_expired_date import simulate_expired_user, \
 #     simulate_prev_expired_user
-# from middlewares import AntiSpamMiddleware
+from middlewares import AntiSpamMiddleware
 
 
 bot = Bot(token=BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
-# dp.update.middleware(AntiSpamMiddleware(limit=2, interval=1))
+dp.update.middleware(AntiSpamMiddleware(limit=2, interval=1))
 
 
 # async def set_commands():
@@ -39,6 +39,7 @@ async def on_startup() -> None:
     await bot.set_webhook(f"{BASE_URL}{WEBHOOK_PATH}")
 
     # await simulate_expired_user(tg_id=1000092717) #Тестовая функция
+    # await simulate_prev_expired_user(tg_id=1000092717)
 
     # Отправляем сообщение администратору о том, что бот был запущен
     asyncio.create_task(subscription_checker(bot))
